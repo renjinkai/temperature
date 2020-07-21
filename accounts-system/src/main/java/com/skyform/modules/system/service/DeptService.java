@@ -49,6 +49,13 @@ public interface DeptService {
     Page<Dept> findSubDeptById(Long deptId, Pageable pageable);
 
     /**
+     * findSubDeptById，不分页
+     * @param deptId
+     * @return
+     */
+    List<Dept> findSubDeptById(Long deptId);
+
+    /**
      * create
      * @param resources
      * @return

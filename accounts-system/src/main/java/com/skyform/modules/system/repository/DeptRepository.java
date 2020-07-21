@@ -23,8 +23,11 @@ public interface DeptRepository extends JpaRepository<Dept, Long>, JpaSpecificat
     @Query(value = "select name from dept where id = ?1",nativeQuery = true)
     String findNameById(Long id);
 
-    @Query(value = "SELECT * FROM dept WHERE pid = (select id from dept where id = ?1)",nativeQuery = true)
+    @Query(value = "SELECT * FROM dept WHERE pid = ?1",nativeQuery = true)
     Page<Dept> findSubDeptById(Long deptId, Pageable pageable);
+
+    @Query(value = "SELECT * FROM dept WHERE pid = ?1",nativeQuery = true)
+    List<Dept> findSubDeptById(Long deptId);
 
     Set<Dept> findByRoles_Id(Long id);
 }

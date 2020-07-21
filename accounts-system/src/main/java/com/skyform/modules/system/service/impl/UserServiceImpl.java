@@ -78,6 +78,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long findDeptIdByUsername(String username) {
+        return userRepository.findDeptIdByUsername(username);
+    }
+
+    @Override
     public UserDTO findById(long id) {
         Optional<User> user = userRepository.findById(id);
         ValidationUtil.isNull(user,"User","id",id);

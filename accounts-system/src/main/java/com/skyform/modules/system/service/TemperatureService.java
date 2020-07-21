@@ -1,6 +1,7 @@
 package com.skyform.modules.system.service;
 
 import com.skyform.modules.system.domain.Temperature;
+import com.skyform.modules.system.service.dto.AbnormalDTO;
 import com.skyform.modules.system.service.dto.TemperatureDTO;
 import com.skyform.modules.system.service.dto.TemperatureQueryCriteria;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,7 @@ public interface TemperatureService {
     * @return
     */
     //@Cacheable(keyGenerator = "keyGenerator")
-    public Object queryAll(TemperatureQueryCriteria criteria);
+    List<TemperatureDTO> queryAll(TemperatureQueryCriteria criteria);
 
     /**
      * findById
@@ -72,4 +73,6 @@ public interface TemperatureService {
     List<TemperatureDTO> query(TemperatureQueryCriteria criteria);
 
     void deleteByDeviceId(String deviceId);
+
+    List<AbnormalDTO> countAbnormal();
 }

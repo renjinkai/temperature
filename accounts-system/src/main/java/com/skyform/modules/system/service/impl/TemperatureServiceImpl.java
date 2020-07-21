@@ -1,14 +1,20 @@
 package com.skyform.modules.system.service.impl;
 
+import com.skyform.config.DataScope;
+import com.skyform.modules.system.domain.Dept;
 import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.repository.TemperatureRepository;
+import com.skyform.modules.system.service.DeptService;
 import com.skyform.modules.system.service.TemperatureService;
+import com.skyform.modules.system.service.UserService;
+import com.skyform.modules.system.service.dto.AbnormalDTO;
 import com.skyform.modules.system.service.dto.TemperatureDTO;
 import com.skyform.modules.system.service.dto.TemperatureQueryCriteria;
 import com.skyform.modules.system.service.mapper.TemperatureMapper;
 import com.skyform.modules.system.service.mybatis_mapper.TemperatureMybatisMapper;
 import com.skyform.utils.PageUtil;
 import com.skyform.utils.QueryHelp;
+import com.skyform.utils.SecurityUtils;
 import com.skyform.utils.ValidationUtil;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
 * @author renjk
@@ -38,6 +43,15 @@ public class TemperatureServiceImpl implements TemperatureService {
     @Autowired
     private TemperatureMybatisMapper temperatureMybatisMapper;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private DeptService deptService;
+
+    @Autowired
+    private DataScope dataScope;
+
     @Override
     public Object queryAll(TemperatureQueryCriteria criteria, Pageable pageable){
         Page<Temperature> page = temperatureRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
@@ -45,7 +59,7 @@ public class TemperatureServiceImpl implements TemperatureService {
     }
 
     @Override
-    public Object queryAll(TemperatureQueryCriteria criteria){
+    public List<TemperatureDTO> queryAll(TemperatureQueryCriteria criteria){
         return temperatureMapper.toDto(temperatureRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder)));
     }
 
@@ -86,5 +100,45 @@ public class TemperatureServiceImpl implements TemperatureService {
     @Override
     public void deleteByDeviceId(String deviceId) {
         temperatureRepository.deleteByDeviceId(deviceId);
+    }
+
+    @Override
+    public List<AbnormalDTO> countAbnormal() {
+        List<AbnormalDTO> abnormalDTOList = new ArrayList<>();
+        // 查询当前登录用户下的一级子部门
+        String username = SecurityUtils.getUsername();
+        long deptId = userService.findDeptIdByUsername(username);
+        List<Dept> subDeptList = deptService.findSubDeptById(deptId);
+        if(subDeptList.size()>0){
+            for(Dept subDept:subDeptList){
+                // 统计子部门下体温异常人员数量
+                List<Dept> deptList = new ArrayList<>();
+                deptList.add(subDept);
+                List<Long> subDeptIds = dataScope.getDeptChildren(deptList);
+                // 查询子部门下所有设备
+                List<String> deviceIdList = temperatureRepository.findDeviceIdByDeptIds(subDeptIds);
+                int count = 0; // 计数器
+                if(deviceIdList.size()>0){
+                    for(String deviceId:deviceIdList){
+                        List<Temperature> temperatureList = temperatureRepository.find3RecordList(deviceId);
+                        if(temperatureList.size() == 3){
+                            double first = temperatureList.get(0).getTemperature();
+                            double second = temperatureList.get(1).getTemperature();
+                            double third = temperatureList.get(2).getTemperature();
+                            if(first>=37 && second>=37 && third>=37){
+                                count++;
+                            }
+                        }
+                    }
+                }
+                AbnormalDTO abnormalDTO = new AbnormalDTO();
+                abnormalDTO.setDept(subDept);
+                abnormalDTO.setCount(count);
+                abnormalDTOList.add(abnormalDTO);
+            }
+            return abnormalDTOList;
+        }else{
+            return null;
+        }
     }
 }

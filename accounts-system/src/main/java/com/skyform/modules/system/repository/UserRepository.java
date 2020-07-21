@@ -66,4 +66,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Transactional
     @Query(value = "update user set cname = ?2 where phone = ?1",nativeQuery = true)
     void updateCname(String phone, String cname);
+
+    @Query(value = "SELECT dept_id FROM `user` WHERE username = ?1",nativeQuery = true)
+    long findDeptIdByUsername(String username);
 }

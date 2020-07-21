@@ -3,6 +3,7 @@ package com.skyform.modules.system.rest;
 import com.skyform.aop.log.Log;
 import com.skyform.config.DataScope;
 import com.skyform.modules.system.domain.Temperature;
+import com.skyform.modules.system.service.DeviceService;
 import com.skyform.modules.system.service.TemperatureService;
 import com.skyform.modules.system.service.dto.TemperatureDTO;
 import com.skyform.modules.system.service.dto.TemperatureQueryCriteria;
@@ -57,7 +58,7 @@ public class TemperatureController {
     @PreAuthorize("hasAnyRole('ADMIN','TEMPERATURE_ALL','TEMPERATURE_EDIT')")
     public ResponseEntity update(@Validated @RequestBody Temperature resources){
         temperatureService.update(resources);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @Log("删除Temperature")
@@ -75,5 +76,13 @@ public class TemperatureController {
     @PreAuthorize("hasAnyRole('ADMIN','TEMPERATURE_ALL','MYBATIS_TEMPERATURE_SELECT')")
     public List<TemperatureDTO> myBatisTemperature(TemperatureQueryCriteria criteria){
         return temperatureService.query(criteria);
+    }
+
+    @Log("异常人数统计")
+    @ApiOperation(value = "异常人数统计")
+    @PostMapping(value = "/countAbnormal")
+    @PreAuthorize("hasAnyRole('ADMIN','TEMPERATURE_ALL','TEMPERATURE_COUNT')")
+    public ResponseEntity countAbnormal(){
+        return new ResponseEntity(temperatureService.countAbnormal(),HttpStatus.OK);
     }
 }

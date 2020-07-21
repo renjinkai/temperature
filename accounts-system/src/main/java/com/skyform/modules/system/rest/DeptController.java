@@ -42,11 +42,11 @@ public class DeptController {
         return new ResponseEntity(deptService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
-    @Log("按名称查询子部门")
-    @ApiOperation(value = "按名称查询子部门")
-    @GetMapping(value = "/findSubDeptByName")
+    @Log("查询子部门")
+    @ApiOperation(value = "查询子部门")
+    @GetMapping(value = "/findSubDeptById")
     @PreAuthorize("hasAnyRole('ADMIN','USER_ALL','USER_SELECT','DEPT_ALL','DEPT_SELECT')")
-    public ResponseEntity findSubDeptByName(Long deptId, Pageable pageable){
+    public ResponseEntity findSubDeptById(Long deptId, Pageable pageable){
         return new ResponseEntity(deptService.findSubDeptById(deptId,pageable),HttpStatus.OK);
     }
 

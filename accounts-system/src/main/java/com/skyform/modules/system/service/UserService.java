@@ -84,5 +84,7 @@ public interface UserService {
 
     List<User> findByDeptId(Long deptId);
 
-    void updateCname(String phone, String cname);;
+    void updateCname(String phone, String cname);
+
+    long findDeptIdByUsername(String username);
 }

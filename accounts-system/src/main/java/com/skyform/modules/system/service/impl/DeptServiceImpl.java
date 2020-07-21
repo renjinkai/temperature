@@ -67,6 +67,11 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public List<Dept> findSubDeptById(Long deptId) {
+        return deptRepository.findSubDeptById(deptId);
+    }
+
+    @Override
     public Set<Dept> findByRoleIds(Long id) {
         return deptRepository.findByRoles_Id(id);
     }
