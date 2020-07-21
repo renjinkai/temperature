@@ -2,6 +2,7 @@ package com.skyform.modules.system.rest;
 
 import com.alibaba.fastjson.JSONObject;
 import com.skyform.aop.log.Log;
+import com.skyform.config.DataScope;
 import com.skyform.modules.system.domain.Device;
 import com.skyform.modules.system.service.DeviceService;
 import com.skyform.modules.system.service.dto.DeviceDTO;
@@ -32,11 +33,16 @@ public class DeviceController {
     @Autowired
     private DeviceService deviceService;
 
+    @Autowired
+    private DataScope dataScope;
+
     @Log("查询Device")
     @ApiOperation(value = "查询Device")
     @GetMapping(value = "/device")
     @PreAuthorize("hasAnyRole('ADMIN','DEVICE_ALL','DEVICE_SELECT')")
     public ResponseEntity getDevices(DeviceQueryCriteria criteria, Pageable pageable){
+        // 数据权限
+        criteria.setDeptIds(dataScope.getDeptIds());
         return new ResponseEntity(deviceService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 

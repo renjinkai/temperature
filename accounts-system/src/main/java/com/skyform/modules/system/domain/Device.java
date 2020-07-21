@@ -26,6 +26,10 @@ public class Device implements Serializable {
     @Column(name = "device_id")
     private String deviceId;
 
+    @OneToOne
+    @JoinColumn(name = "dept_id")
+    private Dept dept;
+
     // 入库时间
     @Column(name = "create_time")
     private Timestamp createTime;

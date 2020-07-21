@@ -33,6 +33,8 @@ public class DeviceDTO implements Serializable {
     // 状态
     private String status;
 
+    private DeptDTO deptDTO;
+
     // 电话
     private String phone;
 }
