@@ -35,4 +35,6 @@ public class TemperatureDTO implements Serializable {
 
     // 手机号
     private String phone;
+
+    private DeptDTO deptDTO;
 }

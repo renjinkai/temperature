@@ -4,6 +4,7 @@ import com.skyform.annotation.Query;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 /**
 * @author renjk
@@ -44,5 +45,11 @@ public class TemperatureQueryCriteria{
     private int page = 0;
 
     private int size = 100;
+
+    @Query(propName = "id", joinName = "dept")
+    private Long deptId;
+
+    @Query(propName = "id", joinName = "dept", type = Query.Type.IN)
+    private Set<Long> deptIds;
 
 }

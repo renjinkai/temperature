@@ -1,6 +1,7 @@
 package com.skyform.modules.system.rest;
 
 import com.skyform.aop.log.Log;
+import com.skyform.config.DataScope;
 import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.service.TemperatureService;
 import com.skyform.modules.system.service.dto.TemperatureDTO;
@@ -29,11 +30,16 @@ public class TemperatureController {
     @Autowired
     private TemperatureService temperatureService;
 
+    @Autowired
+    private DataScope dataScope;
+
     @Log("查询Temperature")
     @ApiOperation(value = "查询Temperature")
     @GetMapping(value = "/temperature")
     @PreAuthorize("hasAnyRole('ADMIN','TEMPERATURE_ALL','TEMPERATURE_SELECT')")
     public ResponseEntity getTemperatures(TemperatureQueryCriteria criteria, Pageable pageable){
+        // 数据权限
+        criteria.setDeptIds(dataScope.getDeptIds());
         return new ResponseEntity(temperatureService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 

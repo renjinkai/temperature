@@ -52,6 +52,10 @@ public class Temperature implements Serializable {
     @Column(name = "phone")
     private String phone;
 
+    @OneToOne
+    @JoinColumn(name = "dept_id")
+    private Dept dept;
+
     public void copy(Temperature source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
