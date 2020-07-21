@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skyform.modules.system.service.mybatis_mapper.TemperatureMybatisMapper">
+    <resultMap id="BaseResultMap" type="com.skyform.modules.system.service.dto.TemperatureDTO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
+        <result column="temperature" jdbcType="DOUBLE" property="temperature"/>
+        <result column="record_time" jdbcType="TIMESTAMP" property="recordTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+    </resultMap>
+    <sql id="where_sql">
+        WHERE 1=1
+        <if test="criteria.id != null">and id = #{criteria.id}</if>
+        <if test="criteria.idCard != null and criteria.idCard != '' ">and id_card like '%' #{criteria.idCard} '%'</if>
+        <if test="criteria.deviceId != null and criteria.deviceId != '' ">and device_id = #{criteria.deviceId}</if>
+        <if test="criteria.temperature != null and criteria.temperature != '' ">and temperature = #{criteria.temperature}</if>
+        <if test="criteria.recordStartTime != null and criteria.recordStartTime != '' ">
+            <![CDATA[ and record_time >=  #{criteria.recordStartTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="criteria.recordEndTime != null and criteria.recordEndTime != '' ">
+            <![CDATA[ and record_time <=  #{criteria.recordEndTime,jdbcType=TIMESTAMP} ]]>
+        </if>
+        <if test="criteria.phone != null and criteria.phone != '' ">and phone = #{criteria.phone}</if>
+    </sql>
+
+    <select id="query" parameterType="com.skyform.modules.system.service.dto.TemperatureQueryCriteria" resultMap="BaseResultMap">
+        select *
+        from temperature
+        <include refid="where_sql"></include>
+    </select>
+</mapper>

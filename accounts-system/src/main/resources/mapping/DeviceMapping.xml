@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skyform.modules.system.service.mybatis_mapper.DeviceMybatisMapper">
+    <update id="updateByDeviceId" parameterType="com.skyform.modules.system.domain.Device">
+        update device
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null">
+                id_card = #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="bindTime != null">
+                bind_time = #{bindTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where device_id = #{deviceId,jdbcType=VARCHAR}
+    </update>
+    <update id="setNull" parameterType="com.skyform.modules.system.domain.Device">
+        UPDATE device
+        SET id_card = NULL,
+        name = NULL,
+        bind_time = NULL,
+        status = "false"
+        where device_id = #{deviceId,jdbcType=VARCHAR}
+    </update>
+</mapper>
