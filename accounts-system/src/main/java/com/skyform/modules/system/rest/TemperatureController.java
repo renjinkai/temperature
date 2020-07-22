@@ -80,7 +80,7 @@ public class TemperatureController {
 
     @Log("异常人数统计")
     @ApiOperation(value = "异常人数统计")
-    @PostMapping(value = "/countAbnormal")
+    @GetMapping(value = "/countAbnormal")
     @PreAuthorize("hasAnyRole('ADMIN','TEMPERATURE_ALL','TEMPERATURE_COUNT')")
     public ResponseEntity countAbnormal(){
         return new ResponseEntity(temperatureService.countAbnormal(),HttpStatus.OK);
