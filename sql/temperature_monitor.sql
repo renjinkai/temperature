@@ -11,7 +11,7 @@
  Target Server Version : 50649
  File Encoding         : 65001
 
- Date: 22/07/2020 10:22:22
+ Date: 22/07/2020 10:58:21
 */
 
 SET NAMES utf8mb4;
@@ -105,12 +105,13 @@ CREATE TABLE `dept`  (
   `level` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否有权限，默认false',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `name`(`name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of dept
 -- ----------------------------
 INSERT INTO `dept` VALUES (1, '部门管理系统', 0, '2020-07-22 10:08:16', b'1', 'primary_school', NULL, 60, 15, 3, NULL);
+INSERT INTO `dept` VALUES (2, 'APP用户部门', 0, '2020-07-22 10:52:43', b'1', 'app', NULL, 60, 15, 3, NULL);
 
 -- ----------------------------
 -- Table structure for device
