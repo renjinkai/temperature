@@ -1,6 +1,7 @@
 package com.skyform.modules.system.service.dto;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
 import lombok.Data;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -28,10 +29,12 @@ public class StudentDTO implements Serializable {
     @Excel(name = "设备ID", width = 25)
     private String deviceId;
 
+    @ExcelEntity(id = "deptClass")
     private DeptDTO deptClass;
 
     private Long deptSchoolId;
 
+    @Excel(name = "学校", width = 25)
     private String deptSchool;
 
     // 家长姓名
@@ -51,25 +54,33 @@ public class StudentDTO implements Serializable {
     private String room;
 
     // 责任人
+    @Excel(name = "责任人")
     private String alarmPerson;
 
     // 责任人手机号
+    @Excel(name = "责任人手机号")
     private String alarmPhone;
 
     // 责任人微信号
+    @Excel(name = "责任人微信号")
     private String alarmWechat;
 
     // 通知方式
+    @Excel(name = "通知方式")
     private String alarmMethod;
 
     // 最近一次检测体温
+    @Excel(name = "最近一次检测体温")
     private Double recentTemperature;
 
     // 最近一次检测时间
+    @Excel(name = "最近一次检测时间", width = 25, format = "yyyy-MM-dd HH:mm:ss")
     private Timestamp recentTime;
 
     // 轨迹
+    @Excel(name = "轨迹")
     private String loca;
 
+    @Excel(name = "绑定状态", replace = { "已绑定_true", "未绑定_false" }, isImportField = "true_st")
     private String bindStatus;
 }

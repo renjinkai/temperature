@@ -34,7 +34,9 @@ public interface StudentService {
     * @return
     */
     //@Cacheable(keyGenerator = "keyGenerator")
-    public List<StudentDTO> queryAll(StudentQueryCriteria criteria);
+    List<StudentDTO> queryAll(StudentQueryCriteria criteria);
+
+    List<StudentDTO> queryAllExcel(StudentQueryCriteria criteria);
 
     /**
      * findById

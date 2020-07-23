@@ -7,9 +7,7 @@ import com.skyform.modules.system.repository.TemperatureRepository;
 import com.skyform.modules.system.service.DeptService;
 import com.skyform.modules.system.service.TemperatureService;
 import com.skyform.modules.system.service.UserService;
-import com.skyform.modules.system.service.dto.AbnormalDTO;
-import com.skyform.modules.system.service.dto.TemperatureDTO;
-import com.skyform.modules.system.service.dto.TemperatureQueryCriteria;
+import com.skyform.modules.system.service.dto.*;
 import com.skyform.modules.system.service.mapper.TemperatureMapper;
 import com.skyform.modules.system.service.mybatis_mapper.TemperatureMybatisMapper;
 import com.skyform.utils.PageUtil;
@@ -109,38 +107,40 @@ public class TemperatureServiceImpl implements TemperatureService {
         String username = SecurityUtils.getUsername();
         long deptId = userService.findDeptIdByUsername(username);
         List<Dept> subDeptList = deptService.findSubDeptById(deptId);
-        if(subDeptList.size()>0){
-            for(Dept subDept:subDeptList){
-                // 统计子部门下体温异常人员数量
-                List<Dept> deptList = new ArrayList<>();
-                deptList.add(subDept);
-                List<Long> subDeptIds = dataScope.getDeptChildren(deptList);
-                // 查询子部门下所有设备
-                List<String> deviceIdList = temperatureRepository.findDeviceIdByDeptIds(subDeptIds);
-                int count = 0; // 计数器
-                if(deviceIdList.size()>0){
-                    for(String deviceId:deviceIdList){
-                        List<Temperature> temperatureList = temperatureRepository.find3RecordList(deviceId);
-                        if(temperatureList.size() == 3){
-                            double first = temperatureList.get(0).getTemperature();
-                            double second = temperatureList.get(1).getTemperature();
-                            double third = temperatureList.get(2).getTemperature();
-                            if(first>=37 && second>=37 && third>=37){
-                                count++;
-                            }
+        if(subDeptList.size()==0){
+            // 无子部门，为班级最小单位部门
+            DeptQueryCriteria criteria = new DeptQueryCriteria();
+            criteria.setId(deptId);
+            List<Dept> list = deptService.query(criteria);
+            subDeptList = new ArrayList<>();
+            subDeptList.add(list.get(0));
+        }
+        for(Dept subDept:subDeptList){
+            // 统计子部门下体温异常人员数量
+            List<Dept> deptList = new ArrayList<>();
+            deptList.add(subDept);
+            List<Long> subDeptIds = dataScope.getDeptChildren(deptList);
+            // 查询子部门下所有设备
+            List<String> deviceIdList = temperatureRepository.findDeviceIdByDeptIds(subDeptIds);
+            int count = 0; // 计数器
+            if(deviceIdList.size()>0){
+                for(String deviceId:deviceIdList){
+                    List<Temperature> temperatureList = temperatureRepository.find3RecordList(deviceId);
+                    if(temperatureList.size() == 3){
+                        double first = temperatureList.get(0).getTemperature();
+                        double second = temperatureList.get(1).getTemperature();
+                        double third = temperatureList.get(2).getTemperature();
+                        if(first>=37.2 && second>=37.2 && third>=37.2){
+                            count++;
                         }
                     }
                 }
-                AbnormalDTO abnormalDTO = new AbnormalDTO();
-                abnormalDTO.setDept(subDept);
-                abnormalDTO.setCount(count);
-                abnormalDTOList.add(abnormalDTO);
             }
-            return abnormalDTOList;
-        }else{
             AbnormalDTO abnormalDTO = new AbnormalDTO();
+            abnormalDTO.setDept(subDept);
+            abnormalDTO.setCount(count);
             abnormalDTOList.add(abnormalDTO);
-            return abnormalDTOList;
         }
+        return abnormalDTOList;
     }
 }

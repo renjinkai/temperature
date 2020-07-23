@@ -6,6 +6,7 @@ import com.skyform.modules.system.repository.StudentRepository;
 import com.skyform.modules.system.service.StudentService;
 import com.skyform.modules.system.service.dto.StudentDTO;
 import com.skyform.modules.system.service.dto.StudentQueryCriteria;
+import com.skyform.modules.system.service.mapper.DeptMapper;
 import com.skyform.modules.system.service.mapper.StudentMapper;
 import com.skyform.modules.system.service.mybatis_mapper.StudentMybatisMapper;
 import com.skyform.utils.PageUtil;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,9 @@ public class StudentServiceImpl implements StudentService {
     private StudentMapper studentMapper;
 
     @Autowired
+    private DeptMapper deptMapper;
+
+    @Autowired
     private StudentMybatisMapper studentMybatisMapper;
 
     @Override
@@ -47,6 +52,38 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDTO> queryAll(StudentQueryCriteria criteria){
         return studentMapper.toDto(studentRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder)));
+    }
+
+    @Override
+    public List<StudentDTO> queryAllExcel(StudentQueryCriteria criteria) {
+        List<Student> list = studentRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder));
+        List<StudentDTO> dtoList = new ArrayList<>();
+        if(list.size()>0){
+            for(Student student:list){
+                StudentDTO dto = new StudentDTO();
+                dto.setId(student.getId());
+                dto.setName(student.getName());
+                dto.setIdCard(student.getIdCard());
+                dto.setDeviceId(student.getDeviceId());
+                dto.setDeptClass(deptMapper.toDto(student.getDept()));
+                dto.setDeptSchool(student.getDeptSchool());
+                dto.setDeptSchoolId(student.getDeptSchoolId());
+                dto.setParent(student.getParent());
+                dto.setParentPhone(student.getParentPhone());
+                dto.setAddress(student.getAddress());
+                dto.setRoom(student.getRoom());
+                dto.setAlarmPerson(student.getAlarmPerson());
+                dto.setAlarmPhone(student.getAlarmPhone());
+                dto.setAlarmWechat(student.getAlarmWechat());
+                dto.setAlarmMethod(student.getAlarmMethod());
+                dto.setRecentTemperature(student.getRecentTemperature());
+                dto.setRecentTime(student.getRecentTime());
+                dto.setLoca(student.getLoca());
+                dto.setBindStatus(student.getBindStatus());
+                dtoList.add(dto);
+            }
+        }
+        return dtoList;
     }
 
     @Override

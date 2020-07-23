@@ -50,6 +50,11 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public List<Dept> query(DeptQueryCriteria criteria) {
+        return deptRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder));
+    }
+
+    @Override
     public DeptDTO findById(Long id) {
         Optional<Dept> dept = deptRepository.findById(id);
         ValidationUtil.isNull(dept,"Dept","id",id);

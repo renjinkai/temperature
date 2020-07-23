@@ -9,6 +9,9 @@ import com.skyform.annotation.Query;
 @Data
 public class DeptQueryCriteria{
 
+    @Query
+    private Long id;
+
     @Query(type = Query.Type.IN, propName="id")
     private Set<Long> ids;
 

@@ -33,6 +33,8 @@ public interface DeptService {
     //@Cacheable(keyGenerator = "keyGenerator")
     List<DeptDTO> queryAll(DeptQueryCriteria criteria);
 
+    List<Dept> query(DeptQueryCriteria criteria);
+
     /**
      * findById
      * @param id

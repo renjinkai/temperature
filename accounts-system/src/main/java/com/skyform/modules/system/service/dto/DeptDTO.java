@@ -1,5 +1,6 @@
 package com.skyform.modules.system.service.dto;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class DeptDTO implements Serializable {
     /**
      * 名称
      */
+    @Excel(name = "班级_deptClass", isImportField = "true_deptClass")
     private String name;
 
     @NotNull

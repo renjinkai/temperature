@@ -109,7 +109,9 @@ public class StudentController {
     @PostMapping(value = "/export/student")
     @PreAuthorize("hasAnyRole('ADMIN','STUDENT_ALL','STUDENT_EXPORT')")
     public ResponseEntity exportStudent(StudentQueryCriteria criteria, HttpServletResponse response) throws Exception{
-        List<StudentDTO> list = studentService.queryAll(criteria);
+        // 数据权限
+        criteria.setDeptIds(dataScope.getDeptIds());
+        List<StudentDTO> list = studentService.queryAllExcel(criteria);
         ExportParams exportParams = new ExportParams("学生信息详情", "学生信息");
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams,StudentDTO.class, list);
         response.setCharacterEncoding("UTF-8");
@@ -160,19 +162,10 @@ public class StudentController {
         List<StudentDTO> list = result.getList();
         if(list.size()>0 && list!=null) {
             for(StudentDTO dto : list) {
-//                if(dto.getIdCard() != null && !"".equals(dto.getIdCard())) {
-//                    DeptQueryCriteria criteria = new DeptQueryCriteria();
-//                    criteria.setName(dto.getDeptName());
-//                    List<DeptDTO> deptDto = deptService.queryAll(criteria);
-//                    if(deptDto.size() > 0){
-//                        dto.setDeptId(deptDto.get(0).getId());
-//                        Student student = studentMapper.toEntity(dto);
-//                        studentService.create(student);
-//                    }else{
-//                        headers.add("message", "请输入正确的学校名称");
-//                        return new ResponseEntity(headers,HttpStatus.NO_CONTENT);
-//                    }
-//                }
+                if(dto.getIdCard() != null && !"".equals(dto.getIdCard())) {
+                    // 存学校id
+                    // 存班级id
+                }
             }
             headers.add("message", "导入成功，录入了" + list.size() + "条数据");
             return new ResponseEntity(headers,HttpStatus.OK);
