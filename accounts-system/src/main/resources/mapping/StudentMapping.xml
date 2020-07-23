@@ -3,7 +3,7 @@
 <mapper namespace="com.skyform.modules.system.service.mybatis_mapper.StudentMybatisMapper">
     <update id="updateByIdCard" parameterType="com.skyform.modules.system.domain.Student">
         update student
-        set device_id = #{deviceId,jdbcType=VARCHAR}
+        set device_id = #{deviceId,jdbcType=VARCHAR},bind_status = #{bindStatus,jdbcType=VARCHAR}
         where id_card = #{idCard,jdbcType=VARCHAR}
     </update>
 </mapper>
