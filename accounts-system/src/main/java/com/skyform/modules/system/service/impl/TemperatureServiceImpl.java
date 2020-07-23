@@ -138,7 +138,9 @@ public class TemperatureServiceImpl implements TemperatureService {
             }
             return abnormalDTOList;
         }else{
-            return null;
+            AbnormalDTO abnormalDTO = new AbnormalDTO();
+            abnormalDTOList.add(abnormalDTO);
+            return abnormalDTOList;
         }
     }
 }
