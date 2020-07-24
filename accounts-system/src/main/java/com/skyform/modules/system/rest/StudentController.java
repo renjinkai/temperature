@@ -14,6 +14,7 @@ import com.skyform.modules.system.service.dto.DeptDTO;
 import com.skyform.modules.system.service.dto.DeptQueryCriteria;
 import com.skyform.modules.system.service.dto.StudentDTO;
 import com.skyform.modules.system.service.dto.StudentQueryCriteria;
+import com.skyform.modules.system.service.mapper.DeptMapper;
 import com.skyform.modules.system.service.mapper.StudentMapper;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,6 +58,9 @@ public class StudentController {
 
     @Autowired
     private DeptService deptService;
+
+    @Autowired
+    private DeptMapper deptMapper;
 
     @Autowired
     private DataScope dataScope;
@@ -155,7 +161,7 @@ public class StudentController {
     @PostMapping(value = "/import/student")
     @PreAuthorize("hasAnyRole('ADMIN','STUDENT_ALL','STUDENT_IMPORT')")
     public ResponseEntity importStudent(MultipartFile file) throws Exception{
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+        MultiValueMap<String, String> header = new LinkedMultiValueMap<String, String>();
         ImportParams importParams = new ImportParams();
         importParams.setTitleRows(1);
         ExcelImportResult<StudentDTO> result = ExcelImportUtil.importExcelMore(file.getInputStream(), StudentDTO.class, importParams);
@@ -164,14 +170,47 @@ public class StudentController {
             for(StudentDTO dto : list) {
                 if(dto.getIdCard() != null && !"".equals(dto.getIdCard())) {
                     // 存学校id
-                    // 存班级id
+                    DeptQueryCriteria schoolCriteria = new DeptQueryCriteria();
+                    schoolCriteria.setName(dto.getDeptSchool());
+                    List<DeptDTO> schoolDTOS = deptService.queryAll(schoolCriteria);
+                    if(schoolDTOS.size()>1){
+                        header.add("message", dto.getDeptSchool() + "此名称的学校存在多个，请核实后再录入");
+                        return new ResponseEntity(header,HttpStatus.NO_CONTENT);
+                    }else if(schoolDTOS.size()==0){
+                        header.add("message", "无此学校");
+                        return new ResponseEntity(header,HttpStatus.NO_CONTENT);
+                    }else if(schoolDTOS.size()==1){
+                        dto.setDeptSchoolId(schoolDTOS.get(0).getId());
+                        // 存班级id
+                        DeptQueryCriteria classCriteria = new DeptQueryCriteria();
+                        classCriteria.setName(dto.getDeptClass().getName());
+                        classCriteria.setPid(schoolDTOS.get(0).getId());
+                        List<DeptDTO> classDTOS = deptService.queryAll(classCriteria);
+                        if(classDTOS.size()>1){
+                            header.add("message", dto.getDeptSchool() + "此名称的班级存在多个，请核实后再录入");
+                            return new ResponseEntity(header,HttpStatus.NO_CONTENT);
+                        }else if(classDTOS.size()==0){
+                            header.add("message", "无此班级");
+                            return new ResponseEntity(header,HttpStatus.NO_CONTENT);
+                        }else if(classDTOS.size()==1){
+                            DeptDTO deptDTO = new DeptDTO();
+                            deptDTO.setId(classDTOS.get(0).getId());
+                            deptDTO.setName(dto.getDeptClass().getName());
+                            dto.setDeptClass(deptDTO);
+                        }
+                        Student student = studentMapper.toEntity(dto);
+                        student.setDept(deptMapper.toEntity(dto.getDeptClass()));
+                        student.setRecentTime(new Timestamp(new Date().getTime()));
+                        student.setBindStatus("false");
+                        studentService.create(student);
+                    }
                 }
             }
-            headers.add("message", "导入成功，录入了" + list.size() + "条数据");
-            return new ResponseEntity(headers,HttpStatus.OK);
+            header.add("message", "导入成功，录入了" + list.size() + "条数据");
+            return new ResponseEntity(header,HttpStatus.OK);
         }else {
-            headers.add("message", "未查询到录入数据");
-            return new ResponseEntity(headers,HttpStatus.NO_CONTENT);
+            header.add("message", "未查询到录入数据");
+            return new ResponseEntity(header,HttpStatus.NO_CONTENT);
         }
     }
 }
