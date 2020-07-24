@@ -190,7 +190,7 @@ public class TemperatureServiceImpl implements TemperatureService {
                     temperature1.setDeviceId(resources.getDeviceId());
                     temperature1.setTemperature(temperature);
                     Date date = new Date(resources.getDeviceTime().getTime());
-                    temperature1.setRecordTime(new Timestamp(date.getTime()-(temperatureArraysCount-i)*10*60*1000));
+                    temperature1.setRecordTime(new Timestamp(date.getTime()-(temperatureArraysCount-1-i)*10*60*1000));
                     temperature1.setCreateTime(new Timestamp(new Date().getTime()));
                     list.add(temperature1);
                 }
