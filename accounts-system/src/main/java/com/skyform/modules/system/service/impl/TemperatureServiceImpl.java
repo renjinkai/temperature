@@ -2,9 +2,13 @@ package com.skyform.modules.system.service.impl;
 
 import com.skyform.config.DataScope;
 import com.skyform.modules.system.domain.Dept;
+import com.skyform.modules.system.domain.DeviceMessage;
 import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.repository.TemperatureRepository;
-import com.skyform.modules.system.service.*;
+import com.skyform.modules.system.service.DeptService;
+import com.skyform.modules.system.service.StudentService;
+import com.skyform.modules.system.service.TemperatureService;
+import com.skyform.modules.system.service.UserService;
 import com.skyform.modules.system.service.dto.*;
 import com.skyform.modules.system.service.mapper.DeptMapper;
 import com.skyform.modules.system.service.mapper.TemperatureMapper;
@@ -152,10 +156,10 @@ public class TemperatureServiceImpl implements TemperatureService {
     }
 
     @Override
-    public List<Temperature> analysisData(DeviceMessageDTO deviceMessageDTO) {
+    public List<Temperature> analysisData(DeviceMessage resources) {
         List<Temperature> list = new ArrayList<>();
-        if(deviceMessageDTO.getMessageType()=="dataReport"){
-            String payload = deviceMessageDTO.getPayLoad();
+        if("dataReport".equals(resources.getMessageType())){
+            String payload = resources.getPayLoad();
             String data = payload.substring(0,payload.length()-1).replace("{APPdata=","");
             String hex = Base64Utils.decode(data);
             String splitStr = hex.replaceAll ("(.{8})", "$1,");
@@ -174,8 +178,8 @@ public class TemperatureServiceImpl implements TemperatureService {
                     double temperature = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
                     // 查学生信息
                     StudentQueryCriteria studentQueryCriteria = new StudentQueryCriteria();
-                    studentQueryCriteria.setDeviceId(deviceMessageDTO.getDeviceId());
-                    List<StudentDTO> studentDTOS = studentService.queryAll(studentQueryCriteria);
+                    studentQueryCriteria.setDeviceId(resources.getDeviceId());
+                    List<StudentDTO> studentDTOS = studentService.queryAllExcel(studentQueryCriteria);
                     // 封装温度对象
                     Temperature temperature1 = new Temperature();
                     if(studentDTOS.size()>0){
@@ -183,9 +187,9 @@ public class TemperatureServiceImpl implements TemperatureService {
                         temperature1.setIdCard(studentDTOS.get(0).getIdCard());
                         temperature1.setDept(deptMapper.toEntity(studentDTOS.get(0).getDeptClass()));
                     }
-                    temperature1.setDeviceId(deviceMessageDTO.getDeviceId());
+                    temperature1.setDeviceId(resources.getDeviceId());
                     temperature1.setTemperature(temperature);
-                    Date date = new Date(deviceMessageDTO.getDeviceTime().getTime());
+                    Date date = new Date(resources.getDeviceTime().getTime());
                     temperature1.setRecordTime(new Timestamp(date.getTime()-(temperatureArraysCount-i)*10*60*1000));
                     temperature1.setCreateTime(new Timestamp(new Date().getTime()));
                     list.add(temperature1);

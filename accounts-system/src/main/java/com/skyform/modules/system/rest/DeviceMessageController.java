@@ -71,7 +71,7 @@ public class DeviceMessageController {
         resources.setCreateTime(new Timestamp(new Date().getTime()));
         DeviceMessageDTO deviceMessageDTO = deviceMessageService.create(resources);
         //解析设备数据
-        List<Temperature> list = temperatureService.analysisData(deviceMessageDTO);
+        List<Temperature> list = temperatureService.analysisData(resources);
         //录入温度表
         if(list.size()>0){
             for (Temperature temperature:list){

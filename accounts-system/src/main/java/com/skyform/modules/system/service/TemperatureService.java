@@ -1,8 +1,8 @@
 package com.skyform.modules.system.service;
 
+import com.skyform.modules.system.domain.DeviceMessage;
 import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.service.dto.AbnormalDTO;
-import com.skyform.modules.system.service.dto.DeviceMessageDTO;
 import com.skyform.modules.system.service.dto.TemperatureDTO;
 import com.skyform.modules.system.service.dto.TemperatureQueryCriteria;
 import org.springframework.data.domain.Pageable;
@@ -77,5 +77,5 @@ public interface TemperatureService {
 
     List<AbnormalDTO> countAbnormal();
 
-    List<Temperature> analysisData(DeviceMessageDTO deviceMessageDTO);
+    List<Temperature> analysisData(DeviceMessage resources);
 }
