@@ -3,7 +3,10 @@ package com.skyform.modules.system.rest;
 import com.alibaba.fastjson.JSONObject;
 import com.skyform.aop.log.Log;
 import com.skyform.modules.system.domain.DeviceMessage;
+import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.service.DeviceMessageService;
+import com.skyform.modules.system.service.TemperatureService;
+import com.skyform.modules.system.service.dto.DeviceMessageDTO;
 import com.skyform.modules.system.service.dto.DeviceMessageQueryCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import io.swagger.annotations.*;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 /**
 * @author renjk
@@ -28,6 +32,9 @@ public class DeviceMessageController {
 
     @Autowired
     private DeviceMessageService deviceMessageService;
+
+    @Autowired
+    private TemperatureService temperatureService;
 
     @Log("查询DeviceMessage")
     @ApiOperation(value = "查询DeviceMessage")
@@ -62,7 +69,16 @@ public class DeviceMessageController {
         }
         resources.setMessage(jsonObject.toJSONString());
         resources.setCreateTime(new Timestamp(new Date().getTime()));
-        return new ResponseEntity(deviceMessageService.create(resources),HttpStatus.OK);
+        DeviceMessageDTO deviceMessageDTO = deviceMessageService.create(resources);
+        //解析设备数据
+        List<Temperature> list = temperatureService.analysisData(deviceMessageDTO);
+        //录入温度表
+        if(list.size()>0){
+            for (Temperature temperature:list){
+                temperatureService.create(temperature);
+            }
+        }
+        return new ResponseEntity(deviceMessageDTO,HttpStatus.OK);
     }
 
     @Log("修改DeviceMessage")

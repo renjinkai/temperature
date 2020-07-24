@@ -4,16 +4,12 @@ import com.skyform.config.DataScope;
 import com.skyform.modules.system.domain.Dept;
 import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.repository.TemperatureRepository;
-import com.skyform.modules.system.service.DeptService;
-import com.skyform.modules.system.service.TemperatureService;
-import com.skyform.modules.system.service.UserService;
+import com.skyform.modules.system.service.*;
 import com.skyform.modules.system.service.dto.*;
+import com.skyform.modules.system.service.mapper.DeptMapper;
 import com.skyform.modules.system.service.mapper.TemperatureMapper;
 import com.skyform.modules.system.service.mybatis_mapper.TemperatureMybatisMapper;
-import com.skyform.utils.PageUtil;
-import com.skyform.utils.QueryHelp;
-import com.skyform.utils.SecurityUtils;
-import com.skyform.utils.ValidationUtil;
+import com.skyform.utils.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
 * @author renjk
@@ -45,7 +46,13 @@ public class TemperatureServiceImpl implements TemperatureService {
     private UserService userService;
 
     @Autowired
+    private StudentService studentService;
+
+    @Autowired
     private DeptService deptService;
+
+    @Autowired
+    private DeptMapper deptMapper;
 
     @Autowired
     private DataScope dataScope;
@@ -142,5 +149,49 @@ public class TemperatureServiceImpl implements TemperatureService {
             abnormalDTOList.add(abnormalDTO);
         }
         return abnormalDTOList;
+    }
+
+    @Override
+    public List<Temperature> analysisData(DeviceMessageDTO deviceMessageDTO) {
+        List<Temperature> list = new ArrayList<>();
+        if(deviceMessageDTO.getMessageType()=="dataReport"){
+            String payload = deviceMessageDTO.getPayLoad();
+            String data = payload.substring(0,payload.length()-1).replace("{APPdata=","");
+            String hex = Base64Utils.decode(data);
+            String splitStr = hex.replaceAll ("(.{8})", "$1,");
+            String[] strings = splitStr.split(",");
+            int temperatureArraysCount = 0;
+            for(String str:strings){
+                if(str.startsWith("01")){
+                    temperatureArraysCount++;
+                }
+            }
+            for(int i=0;i<strings.length;i++){
+                if(strings[i].startsWith("01")){
+                    double temperatureHex = Integer.parseInt(strings[i].substring(strings[i].length()-4),16);
+                    double temperatureDouble = temperatureHex/65536*125-40;
+                    BigDecimal b = new BigDecimal(temperatureDouble);
+                    double temperature = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    // 查学生信息
+                    StudentQueryCriteria studentQueryCriteria = new StudentQueryCriteria();
+                    studentQueryCriteria.setDeviceId(deviceMessageDTO.getDeviceId());
+                    List<StudentDTO> studentDTOS = studentService.queryAll(studentQueryCriteria);
+                    // 封装温度对象
+                    Temperature temperature1 = new Temperature();
+                    if(studentDTOS.size()>0){
+                        temperature1.setName(studentDTOS.get(0).getName());
+                        temperature1.setIdCard(studentDTOS.get(0).getIdCard());
+                        temperature1.setDept(deptMapper.toEntity(studentDTOS.get(0).getDeptClass()));
+                    }
+                    temperature1.setDeviceId(deviceMessageDTO.getDeviceId());
+                    temperature1.setTemperature(temperature);
+                    Date date = new Date(deviceMessageDTO.getDeviceTime().getTime());
+                    temperature1.setRecordTime(new Timestamp(date.getTime()-(temperatureArraysCount-i)*10*60*1000));
+                    temperature1.setCreateTime(new Timestamp(new Date().getTime()));
+                    list.add(temperature1);
+                }
+            }
+        }
+        return list;
     }
 }
