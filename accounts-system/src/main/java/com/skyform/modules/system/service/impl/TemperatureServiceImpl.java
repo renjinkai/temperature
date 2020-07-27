@@ -3,6 +3,7 @@ package com.skyform.modules.system.service.impl;
 import com.skyform.config.DataScope;
 import com.skyform.modules.system.domain.Dept;
 import com.skyform.modules.system.domain.DeviceMessage;
+import com.skyform.modules.system.domain.Student;
 import com.skyform.modules.system.domain.Temperature;
 import com.skyform.modules.system.repository.TemperatureRepository;
 import com.skyform.modules.system.service.DeptService;
@@ -186,6 +187,14 @@ public class TemperatureServiceImpl implements TemperatureService {
                         temperature1.setName(studentDTOS.get(0).getName());
                         temperature1.setIdCard(studentDTOS.get(0).getIdCard());
                         temperature1.setDept(deptMapper.toEntity(studentDTOS.get(0).getDeptClass()));
+                        // 更新学生最后一次采集温度以及采集时间
+                        Student student = new Student();
+                        student.setId(studentDTOS.get(0).getId());
+                        if(i == strings.length-1){
+                            student.setRecentTemperature(temperature);
+                        }
+                        student.setRecentTime(resources.getDeviceTime());
+                        studentService.update(student);
                     }
                     temperature1.setDeviceId(resources.getDeviceId());
                     temperature1.setTemperature(temperature);
