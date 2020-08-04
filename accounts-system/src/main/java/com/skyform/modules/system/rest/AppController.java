@@ -95,7 +95,11 @@ public class AppController {
         }
         final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(user.getUsername());
         if(!jwtUser.getPassword().equals(EncryptUtils.encryptPassword(authorizationUser.getPassword()))){
-            throw new AccountExpiredException("密码错误");
+            map.put("message", "密码错误");
+            map.put("data", "");
+            map.put("code", "-1");
+            map.put("time", new Date().toString());
+            return map;
         }
         // 生成令牌
         final String token = jwtTokenUtil.generateToken(jwtUser);
