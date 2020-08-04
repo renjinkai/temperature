@@ -86,6 +86,13 @@ public class AppController {
     public Map<String, Object> login(@RequestBody AuthorizationUser authorizationUser){
         Map<String, Object> map = new HashMap<String, Object>();
         User user = userService.findByPhone(authorizationUser.getPhone());
+        if(user == null){
+            map.put("message", "用户不存在");
+            map.put("data", "");
+            map.put("code", "-1");
+            map.put("time", new Date().toString());
+            return map;
+        }
         final JwtUser jwtUser = (JwtUser) userDetailsService.loadUserByUsername(user.getUsername());
         if(!jwtUser.getPassword().equals(EncryptUtils.encryptPassword(authorizationUser.getPassword()))){
             throw new AccountExpiredException("密码错误");
