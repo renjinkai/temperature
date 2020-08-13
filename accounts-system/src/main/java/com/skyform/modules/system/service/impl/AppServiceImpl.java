@@ -60,7 +60,7 @@ public class AppServiceImpl implements AppService {
             return map;
         }
         // 发送频率：1分钟内不能再次发送
-        int countOneMinute = messageLogService.getCountCurrentDate(phone);
+        int countOneMinute = messageLogService.getCountOneMinute(phone);
         if(countOneMinute > 0){
             map.put("message", "操作过于频繁，请1分钟后再试");
             map.put("data", "");
@@ -70,7 +70,7 @@ public class AppServiceImpl implements AppService {
         }
         int verifyCode = (int) ((Math.random()*9+1)*1000);
         String sms_text = "短信验证码为：" + verifyCode;
-        redisService.set(phone, verifyCode, 60 * 60 * 24);
+        redisService.set(phone, verifyCode, 60 * 5);
         // 插入短信日志
         MessageLog resources = new MessageLog();
         resources.setPhone(phone);
