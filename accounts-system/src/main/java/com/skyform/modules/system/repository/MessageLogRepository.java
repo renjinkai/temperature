@@ -14,6 +14,6 @@ public interface MessageLogRepository extends JpaRepository<MessageLog, Long>, J
     @Query(value = "SELECT COUNT(1) FROM message_log WHERE DATE_FORMAT(send_time,'%Y-%m-%d') = CURRENT_DATE AND phone = ?1",nativeQuery = true)
     int getCountCurrentDate(String phone);
 
-    @Query(value = "SELECT * FROM message_log WHERE send_time >= DATE_SUB(NOW(),INTERVAL 1 MINUTE) AND phone = ?1",nativeQuery = true)
+    @Query(value = "SELECT COUNT(1) FROM message_log WHERE send_time >= DATE_SUB(NOW(),INTERVAL 1 MINUTE) AND phone = ?1",nativeQuery = true)
     int getCountOneMinute(String phone);
 }
