@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.skyform.aop.log.Log;
 import com.skyform.modules.system.domain.AppGroup;
 import com.skyform.modules.system.service.AppGroupService;
+import com.skyform.modules.system.service.dto.AppGroupDTO;
 import com.skyform.modules.system.service.dto.AppGroupQueryCriteria;
+import com.skyform.utils.UuidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author renjk
@@ -72,5 +79,34 @@ public class AppGroupController {
     @GetMapping(value = "/appGroupCount")
     public ResponseEntity appGroupCount(@RequestParam long groupId){
         return new ResponseEntity(appGroupService.appGroupCount(groupId),HttpStatus.OK);
+    }
+
+    @Log("生成群组编码")
+    @ApiOperation(value = "生成群组编码")
+    @GetMapping(value = "/generatorAppGroupCode")
+    public Map<String, String> generatorAppGroupCode(){
+        Map<String, String> map = new HashMap<String, String>();
+        String code;
+        int size;
+        do {
+            code = UuidUtil.genNum();
+            AppGroupQueryCriteria criteria = new AppGroupQueryCriteria();
+            criteria.setCode(code);
+            List<AppGroupDTO> list = appGroupService.queryAll(criteria);
+            size = list.size();
+        }while (size>0);
+        map.put("message", "");
+        map.put("data", code);
+        map.put("code", "0");
+        map.put("time", new Date().toString());
+        return map;
+    }
+
+    @Log("查询AppGroup内用户")
+    @ApiOperation(value = "查询AppGroup内用户")
+    @GetMapping(value = "/appGroupUsers")
+    @PreAuthorize("hasAnyRole('ADMIN','APPGROUP_ALL','APPGROUP_SELECT')")
+    public ResponseEntity getAppGroupUsers(@RequestParam long groupId){
+        return new ResponseEntity(appGroupService.getAppGroupUsers(groupId),HttpStatus.OK);
     }
 }

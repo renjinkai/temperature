@@ -136,4 +136,9 @@ public class AppGroupServiceImpl implements AppGroupService {
         map.put("time", new Date().toString());
         return map;
     }
+
+    @Override
+    public List<Object> getAppGroupUsers(long groupId) {
+        return appGroupRepository.getAppGroupUsers(groupId);
+    }
 }

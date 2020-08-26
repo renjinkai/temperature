@@ -204,16 +204,4 @@ public class AppController {
         userService.update(resources);
         return new ResponseEntity(HttpStatus.OK);
     }
-
-    @Log("生成群组编码")
-    @ApiOperation(value = "生成群组编码")
-    @GetMapping(value = "/generatorAppGroupCode")
-    public Map<String, String> generatorAppGroupCode(){
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("message", "");
-        map.put("data", UuidUtil.genUUID());
-        map.put("code", "0");
-        map.put("time", new Date().toString());
-        return map;
-    }
 }

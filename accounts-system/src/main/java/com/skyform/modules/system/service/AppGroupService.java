@@ -70,4 +70,6 @@ public interface AppGroupService {
     Map<String, String> inAppGroup(String code, long userId);
 
     Map<String, Object> appGroupCount(long groupId);
+
+    List<Object> getAppGroupUsers(long groupId);
 }
