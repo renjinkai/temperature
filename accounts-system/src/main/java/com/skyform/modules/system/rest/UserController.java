@@ -1,5 +1,6 @@
 package com.skyform.modules.system.rest;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -179,5 +180,13 @@ public class UserController {
         if (currentLevel > optLevel) {
             throw new BadRequestException("角色权限不足");
         }
+    }
+
+    @Log("查询AppGroup内用户")
+    @ApiOperation(value = "查询AppGroup内用户")
+    @GetMapping(value = "/appGroupUsers")
+    @PreAuthorize("hasAnyRole('ADMIN','APPGROUP_ALL','APPGROUP_SELECT')")
+    public ResponseEntity getAppGroupUsers(@RequestParam long groupId){
+        return new ResponseEntity(userService.getAppGroupUsers(groupId),HttpStatus.OK);
     }
 }

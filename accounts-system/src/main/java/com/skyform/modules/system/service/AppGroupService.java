@@ -1,6 +1,7 @@
 package com.skyform.modules.system.service;
 
 import com.skyform.modules.system.domain.AppGroup;
+import com.skyform.modules.system.domain.User;
 import com.skyform.modules.system.service.dto.AppGroupDTO;
 import com.skyform.modules.system.service.dto.AppGroupQueryCriteria;
 //import org.springframework.cache.annotation.CacheConfig;
@@ -70,6 +71,4 @@ public interface AppGroupService {
     Map<String, String> inAppGroup(String code, long userId);
 
     Map<String, Object> appGroupCount(long groupId);
-
-    List<Object> getAppGroupUsers(long groupId);
 }

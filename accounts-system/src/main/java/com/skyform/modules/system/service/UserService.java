@@ -87,4 +87,6 @@ public interface UserService {
     void updateCname(String phone, String cname);
 
     long findDeptIdByUsername(String username);
+
+    List<User> getAppGroupUsers(Long groupId);
 }

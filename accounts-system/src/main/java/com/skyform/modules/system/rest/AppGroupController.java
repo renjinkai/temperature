@@ -101,12 +101,4 @@ public class AppGroupController {
         map.put("time", new Date().toString());
         return map;
     }
-
-    @Log("查询AppGroup内用户")
-    @ApiOperation(value = "查询AppGroup内用户")
-    @GetMapping(value = "/appGroupUsers")
-    @PreAuthorize("hasAnyRole('ADMIN','APPGROUP_ALL','APPGROUP_SELECT')")
-    public ResponseEntity getAppGroupUsers(@RequestParam long groupId){
-        return new ResponseEntity(appGroupService.getAppGroupUsers(groupId),HttpStatus.OK);
-    }
 }

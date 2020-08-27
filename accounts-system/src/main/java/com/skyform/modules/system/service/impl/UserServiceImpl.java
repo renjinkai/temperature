@@ -83,6 +83,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAppGroupUsers(Long groupId) {
+        return userRepository.getAppGroupUsers(groupId);
+    }
+
+    @Override
     public UserDTO findById(long id) {
         Optional<User> user = userRepository.findById(id);
         ValidationUtil.isNull(user,"User","id",id);

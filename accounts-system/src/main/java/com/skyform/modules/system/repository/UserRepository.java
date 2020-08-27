@@ -69,4 +69,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     @Query(value = "SELECT dept_id FROM `user` WHERE username = ?1",nativeQuery = true)
     long findDeptIdByUsername(String username);
+
+    @Query(value = "SELECT * FROM `user` WHERE id IN (SELECT user_id FROM app_group_person_relation WHERE group_id = ?1)",nativeQuery = true)
+    List<User> getAppGroupUsers(Long groupId);
 }
