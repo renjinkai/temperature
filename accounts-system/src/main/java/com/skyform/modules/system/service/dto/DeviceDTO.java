@@ -37,4 +37,6 @@ public class DeviceDTO implements Serializable {
 
     // 电话
     private String phone;
+
+    private Double temperature;
 }

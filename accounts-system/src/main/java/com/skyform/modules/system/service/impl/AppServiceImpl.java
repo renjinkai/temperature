@@ -6,21 +6,18 @@ import com.skyform.modules.monitor.service.RedisService;
 import com.skyform.modules.security.utils.VerifyCodeUtils;
 import com.skyform.modules.system.domain.*;
 import com.skyform.modules.system.service.*;
-import com.skyform.modules.system.service.dto.AppPersonDeviceRelationDTO;
-import com.skyform.modules.system.service.dto.AppPersonDeviceRelationQueryCriteria;
-import com.skyform.modules.system.service.dto.DeviceDTO;
-import com.skyform.modules.system.service.dto.DeviceQueryCriteria;
+import com.skyform.modules.system.service.dto.*;
+import com.skyform.modules.system.service.mapper.DeptMapper;
+import com.skyform.modules.system.service.mapper.DeviceMapper;
 import com.skyform.utils.EncryptUtils;
 import com.skyform.utils.MessageUtil;
 import com.skyform.utils.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author renjk
@@ -37,6 +34,12 @@ public class AppServiceImpl implements AppService {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private DeviceMapper deviceMapper;
+
+    @Autowired
+    private DeptMapper deptMapper;
 
     @Autowired
     private TemperatureService temperatureService;
@@ -169,9 +172,21 @@ public class AppServiceImpl implements AppService {
     @Override
     public Map<String, Object> getDevice(long userId) {
         Map<String, Object> map = new HashMap();
+        List<DeviceDTO> dtoList = new ArrayList<>();
         List<Device> list = deviceService.getDeviceByUserId(userId);
+        for(Device device:list){
+            DeviceDTO deviceDTO = deviceMapper.toDto(device);
+            deviceDTO.setDeptDTO(deptMapper.toDto(device.getDept()));
+            TemperatureQueryCriteria criteria = new TemperatureQueryCriteria();
+            criteria.setDeviceId(device.getDeviceId());
+            List<TemperatureDTO> temperatureDTOList = temperatureService.query(criteria);
+            if(temperatureDTOList.size()>0){
+                deviceDTO.setTemperature(temperatureDTOList.get(0).getTemperature());
+            }
+            dtoList.add(deviceDTO);
+        }
         map.put("message", "");
-        map.put("data", list);
+        map.put("data", dtoList);
         map.put("code", "0");
         map.put("time", new Date().toString());
         return map;

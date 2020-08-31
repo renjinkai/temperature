@@ -30,5 +30,6 @@
         select *
         from temperature
         <include refid="where_sql"></include>
+        ORDER BY record_time DESC
     </select>
 </mapper>
