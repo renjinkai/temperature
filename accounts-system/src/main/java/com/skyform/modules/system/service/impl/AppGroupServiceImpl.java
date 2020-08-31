@@ -4,25 +4,26 @@ import com.skyform.exception.BadRequestException;
 import com.skyform.modules.system.domain.AppGroup;
 import com.skyform.modules.system.domain.AppGroupPersonRelation;
 import com.skyform.modules.system.domain.User;
-import com.skyform.modules.system.service.AppGroupPersonRelationService;
-import com.skyform.modules.system.service.UserService;
-import com.skyform.utils.ValidationUtil;
 import com.skyform.modules.system.repository.AppGroupRepository;
+import com.skyform.modules.system.service.AppGroupPersonRelationService;
 import com.skyform.modules.system.service.AppGroupService;
+import com.skyform.modules.system.service.UserService;
 import com.skyform.modules.system.service.dto.AppGroupDTO;
+import com.skyform.modules.system.service.dto.AppGroupPersonRelationDTO;
+import com.skyform.modules.system.service.dto.AppGroupPersonRelationQueryCriteria;
 import com.skyform.modules.system.service.dto.AppGroupQueryCriteria;
 import com.skyform.modules.system.service.mapper.AppGroupMapper;
+import com.skyform.utils.PageUtil;
+import com.skyform.utils.QueryHelp;
+import com.skyform.utils.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import com.skyform.utils.PageUtil;
-import com.skyform.utils.QueryHelp;
 
 /**
 * @author renjk
@@ -121,6 +122,37 @@ public class AppGroupServiceImpl implements AppGroupService {
         map.put("code", "0");
         map.put("time", new Date().toString());
         return map;
+    }
+
+    @Override
+    public Map<String, String> outAppGroup(String code, long userId) {
+        Map<String, String> map = new HashMap<String, String>();
+        AppGroup appGroup = appGroupRepository.findByCode(code);
+        if(appGroup == null){
+            map.put("data", "");
+            map.put("message", "群组编码"+code+"不存在");
+            map.put("code", "-1");
+            map.put("time", new Date().toString());
+            return map;
+        }
+        AppGroupPersonRelationQueryCriteria criteria = new AppGroupPersonRelationQueryCriteria();
+        criteria.setGroupId(appGroup.getId());
+        criteria.setUserId(userId);
+        List<AppGroupPersonRelationDTO> list = appGroupPersonRelationService.queryAll(criteria);
+        if(list.size()==0){
+            map.put("data", "");
+            map.put("message", "用户不在此群组中");
+            map.put("code", "-1");
+            map.put("time", new Date().toString());
+            return map;
+        }else{
+            appGroupPersonRelationService.delete(list.get(0).getId());
+            map.put("data", "");
+            map.put("message", "退出群组成功");
+            map.put("code", "0");
+            map.put("time", new Date().toString());
+            return map;
+        }
     }
 
     @Override

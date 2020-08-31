@@ -70,5 +70,7 @@ public interface AppGroupService {
 
     Map<String, String> inAppGroup(String code, long userId);
 
+    Map<String, String> outAppGroup(String code, long userId);
+
     Map<String, Object> appGroupCount(long groupId);
 }

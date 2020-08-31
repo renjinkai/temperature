@@ -3,10 +3,13 @@ package com.skyform.modules.system.service;
 import com.skyform.modules.system.domain.AppGroupPersonRelation;
 import com.skyform.modules.system.service.dto.AppGroupPersonRelationDTO;
 import com.skyform.modules.system.service.dto.AppGroupPersonRelationQueryCriteria;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+
 //import org.springframework.cache.annotation.CacheConfig;
 //import org.springframework.cache.annotation.CacheEvict;
 //import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Pageable;
 
 /**
 * @author renjk
@@ -30,7 +33,7 @@ public interface AppGroupPersonRelationService {
     * @return
     */
     //@Cacheable(keyGenerator = "keyGenerator")
-    public Object queryAll(AppGroupPersonRelationQueryCriteria criteria);
+    List<AppGroupPersonRelationDTO> queryAll(AppGroupPersonRelationQueryCriteria criteria);
 
     /**
      * findById

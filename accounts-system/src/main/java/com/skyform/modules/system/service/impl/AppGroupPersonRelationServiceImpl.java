@@ -1,21 +1,23 @@
 package com.skyform.modules.system.service.impl;
 
 import com.skyform.modules.system.domain.AppGroupPersonRelation;
-import com.skyform.utils.ValidationUtil;
 import com.skyform.modules.system.repository.AppGroupPersonRelationRepository;
 import com.skyform.modules.system.service.AppGroupPersonRelationService;
 import com.skyform.modules.system.service.dto.AppGroupPersonRelationDTO;
 import com.skyform.modules.system.service.dto.AppGroupPersonRelationQueryCriteria;
 import com.skyform.modules.system.service.mapper.AppGroupPersonRelationMapper;
+import com.skyform.utils.PageUtil;
+import com.skyform.utils.QueryHelp;
+import com.skyform.utils.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import com.skyform.utils.PageUtil;
-import com.skyform.utils.QueryHelp;
 
 /**
 * @author renjk
@@ -38,7 +40,7 @@ public class AppGroupPersonRelationServiceImpl implements AppGroupPersonRelation
     }
 
     @Override
-    public Object queryAll(AppGroupPersonRelationQueryCriteria criteria){
+    public List<AppGroupPersonRelationDTO> queryAll(AppGroupPersonRelationQueryCriteria criteria){
         return appGroupPersonRelationMapper.toDto(appGroupPersonRelationRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder)));
     }
 

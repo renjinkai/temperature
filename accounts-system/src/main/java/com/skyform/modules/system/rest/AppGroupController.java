@@ -74,6 +74,13 @@ public class AppGroupController {
         return new ResponseEntity(appGroupService.inAppGroup(jsonObject.getString("code"),jsonObject.getLong("userId")),HttpStatus.OK);
     }
 
+    @Log("退出AppGroup")
+    @ApiOperation(value = "退出AppGroup")
+    @PostMapping(value = "/outAppGroup")
+    public ResponseEntity outAppGroup(@RequestBody JSONObject jsonObject){
+        return new ResponseEntity(appGroupService.outAppGroup(jsonObject.getString("code"),jsonObject.getLong("userId")),HttpStatus.OK);
+    }
+
     @Log("统计群组人员数量、关联设备数量")
     @ApiOperation(value = "统计群组人员数量、关联设备数量")
     @GetMapping(value = "/appGroupCount")
