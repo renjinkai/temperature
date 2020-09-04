@@ -3,15 +3,11 @@ package com.skyform.modules.system.service.impl;
 import com.skyform.exception.BadRequestException;
 import com.skyform.modules.system.domain.AppGroup;
 import com.skyform.modules.system.domain.AppGroupPersonRelation;
-import com.skyform.modules.system.domain.User;
 import com.skyform.modules.system.repository.AppGroupRepository;
 import com.skyform.modules.system.service.AppGroupPersonRelationService;
 import com.skyform.modules.system.service.AppGroupService;
 import com.skyform.modules.system.service.UserService;
-import com.skyform.modules.system.service.dto.AppGroupDTO;
-import com.skyform.modules.system.service.dto.AppGroupPersonRelationDTO;
-import com.skyform.modules.system.service.dto.AppGroupPersonRelationQueryCriteria;
-import com.skyform.modules.system.service.dto.AppGroupQueryCriteria;
+import com.skyform.modules.system.service.dto.*;
 import com.skyform.modules.system.service.mapper.AppGroupMapper;
 import com.skyform.utils.PageUtil;
 import com.skyform.utils.QueryHelp;
@@ -72,7 +68,7 @@ public class AppGroupServiceImpl implements AppGroupService {
             throw new BadRequestException("群组编码已存在，请更换一个编码");
         }else{
             AppGroupDTO appGroupDTO = appGroupMapper.toDto(appGroupRepository.save(resources));
-            User user = userService.findByPhone(resources.getContact());
+            UserDTO user = userService.findByName(resources.getCreateBy());
             AppGroupPersonRelation appGroupPersonRelation = new AppGroupPersonRelation();
             appGroupPersonRelation.setGroupId(appGroupDTO.getId());
             appGroupPersonRelation.setUserId(user.getId());
