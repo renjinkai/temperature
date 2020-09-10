@@ -43,8 +43,27 @@ public class AppGroupServiceImpl implements AppGroupService {
 
     @Override
     public Object queryAll(AppGroupQueryCriteria criteria, Pageable pageable){
-        Page<AppGroup> page = appGroupRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
-        return PageUtil.toPage(page.map(appGroupMapper::toDto));
+        Map<String, Object> map = new HashMap<>();
+        String phone = criteria.getContact();
+        if(!"".equals(phone)&&phone!=null){
+            UserDTO user = userService.findByName(phone);
+            if(user == null){
+                map.put("message", "用户" + phone + "不存在");
+                map.put("data", "");
+                map.put("code", "-1");
+                map.put("time", new Date().toString());
+                return map;
+            }
+            List<AppGroup> list = appGroupRepository.getGroupByUser(phone);
+            map.put("message", "");
+            map.put("data", list);
+            map.put("code", "0");
+            map.put("time", new Date().toString());
+            return map;
+        } else{
+            Page<AppGroup> page = appGroupRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
+            return PageUtil.toPage(page.map(appGroupMapper::toDto));
+        }
     }
 
     @Override
