@@ -29,4 +29,6 @@ public class AppGroupQueryCriteria{
     // 模糊
     @Query(type = Query.Type.INNER_LIKE)
     private String contact;
+
+    private Long userId;
 }

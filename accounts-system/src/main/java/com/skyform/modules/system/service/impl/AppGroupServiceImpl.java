@@ -9,11 +9,10 @@ import com.skyform.modules.system.service.AppGroupService;
 import com.skyform.modules.system.service.UserService;
 import com.skyform.modules.system.service.dto.*;
 import com.skyform.modules.system.service.mapper.AppGroupMapper;
-import com.skyform.utils.PageUtil;
+import com.skyform.modules.system.service.mybatis_mapper.AppGroupMybatisMapper;
 import com.skyform.utils.QueryHelp;
 import com.skyform.utils.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -41,6 +40,9 @@ public class AppGroupServiceImpl implements AppGroupService {
     @Autowired
     private AppGroupPersonRelationService appGroupPersonRelationService;
 
+    @Autowired
+    private AppGroupMybatisMapper appGroupMybatisMapper;
+
     @Override
     public Object queryAll(AppGroupQueryCriteria criteria, Pageable pageable){
         Map<String, Object> map = new HashMap<>();
@@ -61,8 +63,7 @@ public class AppGroupServiceImpl implements AppGroupService {
             map.put("time", new Date().toString());
             return map;
         } else{
-            Page<AppGroup> page = appGroupRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
-            return PageUtil.toPage(page.map(appGroupMapper::toDto));
+            return appGroupMybatisMapper.query(criteria);
         }
     }
 
