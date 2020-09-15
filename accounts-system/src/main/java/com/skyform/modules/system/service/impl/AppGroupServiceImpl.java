@@ -82,8 +82,8 @@ public class AppGroupServiceImpl implements AppGroupService {
             criteria.setPage(page);
             criteria.setSize(size);
             List<AppGroup> appGroupList = appGroupMybatisMapper.query(criteria);
-            pager.setRows(appGroupList);
-            pager.setTotal(appGroupMybatisMapper.count(criteria));
+            pager.setContent(appGroupList);
+            pager.setTotalElements(appGroupMybatisMapper.count(criteria));
             return pager;
         }
     }
