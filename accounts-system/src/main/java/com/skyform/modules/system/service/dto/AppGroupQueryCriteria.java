@@ -31,4 +31,8 @@ public class AppGroupQueryCriteria{
     private String contact;
 
     private Long userId;
+
+    private int page;
+
+    private int size;
 }

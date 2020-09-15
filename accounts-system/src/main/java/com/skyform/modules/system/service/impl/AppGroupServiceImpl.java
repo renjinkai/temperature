@@ -63,7 +63,28 @@ public class AppGroupServiceImpl implements AppGroupService {
             map.put("time", new Date().toString());
             return map;
         } else{
-            return appGroupMybatisMapper.query(criteria);
+            int page = 0;
+            int size = 10;
+            if(pageable.getPageNumber() !=0 && pageable.getPageSize() != 0){
+                page = (pageable.getPageNumber()-1)*pageable.getPageSize();
+                size = pageable.getPageSize();
+            }
+            long userId = criteria.getUserId();
+            UserDTO userDTO = userService.findById(userId);
+            List<RoleSmallDTO> list = new ArrayList(userDTO.getRoles());
+            for(RoleSmallDTO roleSmallDTO : list){
+                if("超级管理员".equals(roleSmallDTO.getName())){
+                    userId = 0;
+                    criteria.setUserId(userId);
+                }
+            }
+            Pager<AppGroup> pager = new Pager<>();
+            criteria.setPage(page);
+            criteria.setSize(size);
+            List<AppGroup> appGroupList = appGroupMybatisMapper.query(criteria);
+            pager.setRows(appGroupList);
+            pager.setTotal(appGroupMybatisMapper.count(criteria));
+            return pager;
         }
     }
 

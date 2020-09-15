@@ -42,6 +42,9 @@ public class AppServiceImpl implements AppService {
     private DeptMapper deptMapper;
 
     @Autowired
+    private DeptService deptService;
+
+    @Autowired
     private TemperatureService temperatureService;
 
     @Autowired
@@ -215,6 +218,10 @@ public class AppServiceImpl implements AppService {
             resource.setBindTime(new Timestamp(new Date().getTime()));
             resource.setName(name);
             resource.setStatus("true");
+            DeptQueryCriteria criteria = new DeptQueryCriteria();
+            criteria.setName("默认部门");
+            List<Dept> list = deptService.query(criteria);
+            resource.setDept(list.get(0));
             DeviceDTO deviceDTO = deviceService.create(resource);
             id = deviceDTO.getId();
         }else{

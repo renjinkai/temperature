@@ -12,4 +12,6 @@ public interface AppGroupMybatisMapper {
 
     List<AppGroup> query(@Param("criteria") AppGroupQueryCriteria criteria);
 
+    long count(@Param("criteria") AppGroupQueryCriteria criteria);
+
 }

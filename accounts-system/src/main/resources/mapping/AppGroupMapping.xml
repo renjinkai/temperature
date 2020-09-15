@@ -10,7 +10,9 @@
     </resultMap>
     <sql id="where_sql">
         WHERE 1=1
-        and id IN (SELECT group_id FROM `app_group_person_relation` WHERE user_id = #{criteria.userId})
+        <if test="criteria.userId != 0">
+            and id IN (SELECT group_id FROM `app_group_person_relation` WHERE user_id = #{criteria.userId})
+        </if>
         <if test="criteria.name != null and criteria.name != '' ">and name like '%' #{criteria.name} '%'</if>
         <if test="criteria.code != null and criteria.code != '' ">and code = #{criteria.code}</if>
         <if test="criteria.createBy != null and criteria.createBy != '' ">and create_by = #{criteria.createBy}</if>
@@ -19,6 +21,12 @@
 
     <select id="query" parameterType="com.skyform.modules.system.service.dto.AppGroupQueryCriteria" resultMap="BaseResultMap">
         select *
+        from app_group
+        <include refid="where_sql"></include>
+        limit #{criteria.page},#{criteria.size}
+    </select>
+    <select id="count" parameterType="com.skyform.modules.system.service.dto.AppGroupQueryCriteria" resultType="long">
+	    select count(1)
         from app_group
         <include refid="where_sql"></include>
     </select>
